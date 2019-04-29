@@ -3,7 +3,19 @@ from PyQt5 import QtWidgets as qw
 from PyQt5 import QtGui as qg
 
 
-class MainWindow(qw.QWidget):
+class Snake(qw.QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.init_me()
+
+    def init_me(self):
+        self.setWindowTitle('Snake')
+        self.setCentralWidget(Settings())
+        self.show()
+
+
+class Settings(qw.QWidget):
+
     def __init__(self):
         super().__init__()
         self.init_me()
@@ -11,14 +23,30 @@ class MainWindow(qw.QWidget):
     def init_me(self):
 
         player_name = qw.QLineEdit()
+        player_name.setMaxLength(16)
+
         speed_up_factor = qw.QLineEdit()
+        speed_up_factor.setMaxLength(3)
+
         int_speed = qw.QLineEdit()
+        int_speed.setMaxLength(3)
+
         max_speed = qw.QLineEdit()
+        max_speed.setMaxLength(3)
+
         step_speed = qw.QLineEdit()
+        step_speed.setMaxLength(3)
+
         initial_snake_size = qw.QLineEdit()
+        initial_snake_size.setMaxLength(2)
+
         fruit_prob = qw.QLineEdit()
+        fruit_prob.setMaxLength(1)
+
         fruit_life_prob_max = qw.QLineEdit()
+
         fruit_life_prob_min = qw.QLineEdit()
+
         game_board_zoom = qw.QLineEdit()
 
         game_board_size = qw.QHBoxLayout()
@@ -38,7 +66,7 @@ class MainWindow(qw.QWidget):
 
         form = qw.QFormLayout()
 
-        form.addRow(qw.QLabel("player_name"), player_name)
+        form.addRow(qw.QLabel("player_name"), self.player_name)
         form.addRow(qw.QLabel("border"), border)
         form.addRow(qw.QLabel("speedupfactor"), speed_up_factor)
         form.addRow(qw.QLabel("int_speed"), int_speed)
@@ -59,24 +87,24 @@ class MainWindow(qw.QWidget):
         self.show()
 
     def game_start_clicked(self):
-        print('game_start_clicked'
-        w = SnakeWindow()
+        print('game_start_clicked')
+        w.setCentralWidget(SnakeWindow())
 
 
 class SnakeWindow(qw.QWidget):
 
-    player_name = None
-    speed_up_factor = None
-    int_speed = None
-    max_speed = None
-    step_speed = None
-    initial_snake_size = None
-    fruit_prob = None
-    fruit_life_prob_max = None
-    fruit_life_prob_min = None
-    game_board_zoom = None
-    game_board_size = []
-    border = None
+    player_name = 'default'
+    speed_up_factor = 1
+    int_speed = 1
+    max_speed = 20
+    step_speed = 1
+    initial_snake_size = 2
+    fruit_prob = 1
+    fruit_life_prob_max = 1
+    fruit_life_prob_min = 1
+    game_board_zoom = 1
+    game_board_size = [16, 16]
+    border = False
 
     def __init__(self):
         super().__init__()
@@ -90,7 +118,6 @@ class SnakeWindow(qw.QWidget):
 
 
 if __name__ == "__main__":
-
     app = qw.QApplication(sys.argv)
-    w = MainWindow()
+    w = Snake()
     sys.exit(app.exec_())
