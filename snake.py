@@ -52,6 +52,8 @@ class MainWindow(qw.QWidget):
         self.setWindowIcon(qg.QIcon('snake.png'))
         self.show()
 
+class SnakeWindow(qw.QWidget):
+    pass
 
 if __name__ == "__main__":
     app = qw.QApplication(sys.argv)
