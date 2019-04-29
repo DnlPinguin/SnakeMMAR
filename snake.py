@@ -27,6 +27,7 @@ class MainWindow(qw.QWidget):
 
         game_start_button = qw.QPushButton()
         game_start_button.setText('Spiel starten')
+        game_start_button.clicked.connect(self.game_start_clicked)
 
         high_score_list = qw.QPushButton()
         high_score_list.setText('Highscore-Liste')
@@ -51,17 +52,45 @@ class MainWindow(qw.QWidget):
         form.addRow(qw.QLabel("Game Board Zoom"), game_board_zoom)
         form.addRow(game_start_button, high_score_list)
 
-
         self.setLayout(form)
         self.setGeometry(100, 100, 500, 500)
-        self.setWindowTitle('Snake Game')
+        self.setWindowTitle('Settings')
         self.setWindowIcon(qg.QIcon('snake.png'))
         self.show()
 
+    def game_start_clicked(self):
+        print('game_start_clicked'
+        w = SnakeWindow()
+
+
 class SnakeWindow(qw.QWidget):
-    pass
+
+    player_name = None
+    speed_up_factor = None
+    int_speed = None
+    max_speed = None
+    step_speed = None
+    initial_snake_size = None
+    fruit_prob = None
+    fruit_life_prob_max = None
+    fruit_life_prob_min = None
+    game_board_zoom = None
+    game_board_size = []
+    border = None
+
+    def __init__(self):
+        super().__init__()
+        self.init_me()
+
+    def init_me(self):
+        self.setGeometry(700, 700, 500, 500)
+        self.setWindowTitle('actual gameplay')
+        self.setWindowIcon(qg.QIcon('snake.png'))
+        self.show()
+
 
 if __name__ == "__main__":
+
     app = qw.QApplication(sys.argv)
     w = MainWindow()
     sys.exit(app.exec_())
