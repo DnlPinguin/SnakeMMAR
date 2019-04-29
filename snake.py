@@ -31,9 +31,14 @@ class MainWindow(qw.QWidget):
         high_score_list = qw.QPushButton()
         high_score_list.setText('Highscore-Liste')
 
+        border = qw.QHBoxLayout()
+        border.addWidget(qw.QCheckBox("on"))
+        border.addWidget(qw.QCheckBox("off"))
+
         form = qw.QFormLayout()
 
         form.addRow(qw.QLabel("player_name"), player_name)
+        form.addRow(qw.QLabel("border"), border)
         form.addRow(qw.QLabel("speedupfactor"), speed_up_factor)
         form.addRow(qw.QLabel("int_speed"), int_speed)
         form.addRow(qw.QLabel("max_speed"), max_speed)
@@ -45,6 +50,7 @@ class MainWindow(qw.QWidget):
         form.addRow(qw.QLabel("Game Board Size"), game_board_size)
         form.addRow(qw.QLabel("Game Board Zoom"), game_board_zoom)
         form.addRow(game_start_button, high_score_list)
+
 
         self.setLayout(form)
         self.setGeometry(100, 100, 500, 500)
