@@ -3,6 +3,7 @@ from PyQt5 import QtWidgets as qw
 from PyQt5 import QtGui as qg
 from PyQt5 import QtCore as qc
 
+
 class Snake(qw.QMainWindow):
 
     def __init__(self):
@@ -11,8 +12,22 @@ class Snake(qw.QMainWindow):
 
     def init_me(self):
         self.setWindowTitle('Snake')
+        self.setGeometry(10, 10, 1000, 1000)
         self.setCentralWidget(Settings())
         self.show()
+        self.setMouseTracking(True)
+
+    def keyPressEvent(self, e):
+        if e.key() == qc.Qt.Key_Up:
+            print('oben')
+        if e.key() == qc.Qt.Key_Left:
+            print('links')
+        if e.key() == qc.Qt.Key_Right:
+            print('rechts')
+        if e.key() == qc.Qt.Key_Down:
+            print('unten')
+        if e.key() == qc.Qt.Key_Escape:
+            self.setCentralWidget(Settings())
 
 
 class Settings(qw.QWidget):
@@ -27,8 +42,9 @@ class Settings(qw.QWidget):
     fruit_life_prob_max_att = 1
     fruit_life_prob_min_att = 1
     game_board_zoom_att = 1
-    game_board_size_att = [16, 16]
+    game_board_size_att = [999, 999]
     border_att = False
+    snake_pos = [game_board_size_att[0]/2]
 
     def __init__(self):
         super().__init__()
@@ -94,7 +110,6 @@ class Settings(qw.QWidget):
         self.init_me()
 
     def init_me(self):
-        self.setGeometry(100, 100, 500, 500)
         self.setWindowTitle('Settings')
         self.setWindowIcon(qg.QIcon('snake.png'))
         self.show()
@@ -125,7 +140,6 @@ class Settings(qw.QWidget):
 
 class SnakeWindow(qw.QWidget):
     settings = None
-
     display = None
 
     def __init__(self, other):
@@ -140,7 +154,6 @@ class SnakeWindow(qw.QWidget):
         self.setLayout(vbox)
         vbox.addWidget(self.display)
 
-        self.setGeometry(700, 700, 500, 500)
         self.setWindowTitle('actual gameplay')
         self.setWindowIcon(qg.QIcon('snake.png'))
         self.show()
@@ -161,22 +174,23 @@ class SnakeGameWindow(qw.QLabel):
         self.size_y = size_y
         self.scale = scale
         self.img = qg.QImage(size_x, size_y, qg.QImage.Format_RGBA8888)
-        self.img.fill(qc.Qt.red)
-        self.update()
+        self.img.fill(qc.Qt.black)
+        self.draw_rectangle(100, 100, qc.Qt.blue)
 
     def update(self):
         self.pixmap = qg.QPixmap.fromImage(self.img)
         self.scaledpixmap = self.pixmap.scaled(self.size_x * self.scale, self.size_y * self.scale)
         self.setPixmap(self.scaledpixmap)
 
-    def set_pixel(self, x, y, color=qc.Qt.white):
-        if (x >= self.size_x):
+    def draw_rectangle(self, x, y, color=qc.Qt.white):
+        if x >= self.size_x:
             print("Ups something went wrong with set_pixel in SnakeGameWindow")
             return
-        if (y >= self.size_y):
+        if y >= self.size_y:
             print("Ups something went wrong with set_pixel in SnakeGameWindow")
             return
         self.img.setPixelColor(x, y, color)
+        self.update()
 
 
 if __name__ == "__main__":
