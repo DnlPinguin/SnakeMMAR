@@ -23,6 +23,7 @@ class Snake(qw.QMainWindow):
     game_board_size_att = [16, 9]
     border_att = False
     snake_pos = [game_board_size_att[0] / 2]
+    snake_direction = 4
 
     def __init__(self):
         super().__init__()
@@ -41,12 +42,16 @@ class Snake(qw.QMainWindow):
     def keyPressEvent(self, e):
         if e.key() == qc.Qt.Key_Up:
             print('oben')
+            self.snake_direction = 8
         if e.key() == qc.Qt.Key_Left:
             print('links')
+            self.snake_direction = 4
         if e.key() == qc.Qt.Key_Right:
             print('rechts')
+            self.snake_direction = 6
         if e.key() == qc.Qt.Key_Down:
             print('unten')
+            self.snake_direction = 2
         if e.key() == qc.Qt.Key_Escape:
             self.setCentralWidget(Settings(self))
 
