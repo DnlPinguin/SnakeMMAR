@@ -20,6 +20,8 @@ class Snake(qw.QMainWindow):
     game_board_zoom_att = 50
     game_board_size_att = [16, 9]
 
+    history = []
+
     snake_hungry = True
     snake_pos = [round(game_board_size_att[0]/2), round(game_board_size_att[1]/2)]
     snake_direction = 4
@@ -251,9 +253,11 @@ class SnakeGameWindow(qw.QLabel):
 
     def game_lost(self):
         self.timer.stop()
+        main_window.history.append((main_window.player_name_att, main_window.initial_snake_size_att))
         main_window.snake_pos = [round(main_window.game_board_size_att[0]/2), round(main_window.game_board_size_att[1]/2)]
         main_window.snake_whole = [(main_window.snake_pos[0], main_window.snake_pos[1])]
         main_window.int_speed_att = 200
+        main_window.initial_snake_size_att = 1
         main_window.statusBar().showMessage('Game OVER: Press Escape to get back in the Menu')
 
     def draw_fruit(self):
