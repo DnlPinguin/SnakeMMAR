@@ -24,17 +24,12 @@ class Snake(qw.QMainWindow):
     snake_pos = [round(game_board_size_att[0]/2), round(game_board_size_att[1]/2)]
     snake_direction = 4
     snake_whole = [(snake_pos[0], snake_pos[1])]
-    snake_length = len(snake_whole)
-
 
     def __init__(self):
         super().__init__()
         self.init_me()
 
     def init_me(self):
-
-        #self.signal = SignalProcesser()
-        #self.signal.key_up_event.connect(self.keyPressEvent)
         self.setWindowIcon(qg.QIcon('snake.png'))
         self.setWindowTitle('Snake')
         self.setCentralWidget(Settings(self))
@@ -198,6 +193,9 @@ class SnakeGameWindow(qw.QLabel):
         self.img.fill(qc.Qt.black)
 
     def game(self):
+        main_window.statusBar().showMessage(main_window.player_name_att +
+                                            " Length : " +
+                                            str(main_window.initial_snake_size_att))
         self.board_reset()
         if main_window.fruit_not_on_board:
             self.spawn_fruit()
@@ -238,6 +236,7 @@ class SnakeGameWindow(qw.QLabel):
             if main_window.int_speed_att < main_window.max_speed_att:
                 main_window.int_speed_att = main_window.max_speed_att
             self.timer.setInterval(main_window.int_speed_att)
+            main_window.initial_snake_size_att = main_window.initial_snake_size_att +1
 
     def snake_harakiri(self):
         print(' Snake length', len(main_window.snake_whole))
@@ -255,6 +254,7 @@ class SnakeGameWindow(qw.QLabel):
         main_window.snake_pos = [round(main_window.game_board_size_att[0]/2), round(main_window.game_board_size_att[1]/2)]
         main_window.snake_whole = [(main_window.snake_pos[0], main_window.snake_pos[1])]
         main_window.int_speed_att = 200
+        main_window.statusBar().showMessage('Game OVER: Press Escape to get back in the Menu')
 
     def draw_fruit(self):
         self.draw_rectangle(main_window.fruit_pos[0], main_window.fruit_pos[1], qc.Qt.red)
