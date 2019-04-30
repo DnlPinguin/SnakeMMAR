@@ -2,28 +2,34 @@ import sys
 from PyQt5 import QtWidgets as qw
 from PyQt5 import QtGui as qg
 from PyQt5 import QtCore as qc
-
-
-class SignalProcesser (qc.QObject):
-    key_up_event = qc.pyqtSignal()
+import random
 
 
 class Snake(qw.QMainWindow):
 
     player_name_att = 'default'
+
     speed_up_factor_att = 1
-    int_speed_att = 1
+    int_speed_att = 2000
     max_speed_att = 20
     step_speed_att = 1
+
     initial_snake_size_att = 2
     fruit_prob_att = 1
     fruit_life_prob_max_att = 1
     fruit_life_prob_min_att = 1
-    game_board_zoom_att = 100
+    fruit_not_on_board = True
+    fruit_pos = [1, 1]
+    game_board_zoom_att = 50
     game_board_size_att = [16, 9]
-    border_att = False
-    snake_pos = [game_board_size_att[0] / 2]
+
+    border_att = True
+
+    snake_hungry = True
+    snake_pos = [game_board_size_att[0]/2, game_board_size_att[1]/2]
     snake_direction = 4
+    snake_whole = [(snake_pos[0], snake_pos[1])]
+    snake_length = 1
 
     def __init__(self):
         super().__init__()
@@ -33,25 +39,29 @@ class Snake(qw.QMainWindow):
 
         #self.signal = SignalProcesser()
         #self.signal.key_up_event.connect(self.keyPressEvent)
+        self.setWindowIcon(qg.QIcon('snake.png'))
         self.setWindowTitle('Snake')
-        self.setGeometry(10, 10, 1000, 1000)
         self.setCentralWidget(Settings(self))
         self.show()
         self.setMouseTracking(True)
 
     def keyPressEvent(self, e):
         if e.key() == qc.Qt.Key_Up:
-            print('oben')
-            self.snake_direction = 8
+            if self.snake_direction == 4 or self.snake_direction == 6:
+                self.snake_direction = 8
+
         if e.key() == qc.Qt.Key_Left:
-            print('links')
-            self.snake_direction = 4
+            if self.snake_direction == 8 or self.snake_direction == 2:
+                self.snake_direction = 4
+
         if e.key() == qc.Qt.Key_Right:
-            print('rechts')
-            self.snake_direction = 6
+            if self.snake_direction == 8 or self.snake_direction == 2:
+                self.snake_direction = 6
+
         if e.key() == qc.Qt.Key_Down:
-            print('unten')
-            self.snake_direction = 2
+            if self.snake_direction == 4 or self.snake_direction == 6:
+                self.snake_direction = 2
+
         if e.key() == qc.Qt.Key_Escape:
             self.setCentralWidget(Settings(self))
 
@@ -168,7 +178,6 @@ class SnakeWindow(qw.QWidget):
         vbox = qw.QHBoxLayout()
         self.setLayout(vbox)
         vbox.addWidget(self.display)
-
         self.setWindowTitle('actual gameplay')
         self.setWindowIcon(qg.QIcon('snake.png'))
         self.show()
@@ -190,24 +199,112 @@ class SnakeGameWindow(qw.QLabel):
         self.scale = scale
         self.img = qg.QImage(size_x, size_y, qg.QImage.Format_RGBA8888)
         self.img.fill(qc.Qt.black)
-        self.draw_rectangle(5, 5, qc.Qt.blue)
+        self.draw_rectangle(main_window.snake_pos[0], main_window.snake_pos[1], qc.Qt.green)
+        self.move()
+        self.timer = qc.QTimer()
+        self.timer.setInterval(main_window.int_speed_att)
+        self.timer.timeout.connect(self.game)
+        self.timer.start(main_window.int_speed_att)
 
     def update(self):
         self.pixmap = qg.QPixmap.fromImage(self.img)
         self.scaledpixmap = self.pixmap.scaled(self.size_x * self.scale, self.size_y * self.scale)
         self.setPixmap(self.scaledpixmap)
 
-    def draw_rectangle(self, x, y, color=qc.Qt.white):
+    def board_reset(self):
+        self.img.fill(qc.Qt.black)
+
+    def game(self):
+        self.board_reset()
+        if main_window.fruit_not_on_board:
+            self.spawn_fruit()
+        else:
+            self.draw_fruit()
+        #self.snake_collide_border()
+        #self.snake_collide_fruit()
+        self.move()
+        self.draw_snake()
+
+    def draw_snake(self):
+        for body in main_window.snake_whole:
+            self.draw_rectangle(body[0], body[1])
+
+    def spawn_fruit(self):
+        main_window.fruit_pos[0] = random.randint(1, main_window.game_board_size_att[0]-1)
+        main_window.fruit_pos[1] = random.randint(1, main_window.game_board_size_att[1]-1)
+        main_window.fruit_not_on_board = False
+
+    def snake_collide_border(self):
+        if main_window.border_att:
+            if main_window.snake_pos[0] < 0:
+                main_window.snake_pos[0] = main_window.game_board_size_att[0]
+
+            elif main_window.snake_pos[0] >= main_window.game_board_size_att[0]:
+                main_window.snake_pos[0] = -1
+
+            elif main_window.snake_pos[1] < 0:
+                main_window.snake_pos[1] = main_window.game_board_size_att[1]
+
+            elif main_window.snake_pos[1] >= main_window.game_board_size_att[1]:
+                main_window.snake_pos[1] = -1
+
+    def snake_collide_fruit(self):
+        if main_window.snake_pos[0] == main_window.fruit_pos[0] and main_window.snake_pos[1] == main_window.fruit_pos[1]:
+            main_window.snake_hungry = False
+            main_window.fruit_not_on_board = True
+
+    def snake_harakiri(self):
+        print(' Snake length', len(main_window.snake_whole))
+        for i in range(0, len(main_window.snake_whole)-1):
+            print('for elenment', i)
+            print('snake Head', main_window.snake_pos)
+            print('snake whole', main_window.snake_whole[i])
+            print('--------------------------------')
+            if (main_window.snake_pos[0], main_window.snake_pos[1]) == main_window.snake_whole[i]:
+                self.game_lost()
+                print('game_lost')
+
+    def game_lost(self):
+        self.timer.stop()
+
+
+    def draw_fruit(self):
+        self.draw_rectangle(main_window.fruit_pos[0], main_window.fruit_pos[1], qc.Qt.red)
+
+    def move(self):
+
+        if main_window.snake_direction == 2:
+            main_window.snake_pos[1] = main_window.snake_pos[1] + 1
+
+        if main_window.snake_direction == 4:
+            main_window.snake_pos[0] = main_window.snake_pos[0] - 1
+
+        if main_window.snake_direction == 6:
+            main_window.snake_pos[0] = main_window.snake_pos[0] + 1
+
+        if main_window.snake_direction == 8:
+            main_window.snake_pos[1] = main_window.snake_pos[1] - 1
+
+        self.snake_harakiri()
+        self.snake_collide_fruit()
+        self.snake_collide_border()
+
+        main_window.snake_whole.append((main_window.snake_pos[0], main_window.snake_pos[1]))
+
+        if main_window.snake_hungry:
+            main_window.snake_whole.pop(0)
+        else:
+            main_window.snake_hungry = True
+
+    def draw_rectangle(self, x, y, color=qc.Qt.green):
         if x >= self.size_x:
-            print("Ups something went wrong with set_pixel in SnakeGameWindow")
+            print("Ups something went wrong with x set_pixel in SnakeGameWindow")
             return
         if y >= self.size_y:
-            print("Ups something went wrong with set_pixel in SnakeGameWindow")
+            print("Ups something went wrong with y set_pixel in SnakeGameWindow")
             return
         self.img.setPixelColor(x, y, color)
         self.update()
-
-
 
 
 if __name__ == "__main__":
