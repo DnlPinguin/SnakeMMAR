@@ -9,25 +9,19 @@ class Snake(qw.QMainWindow):
 
     player_name_att = 'default'
 
-    speed_up_factor_att = 1
     int_speed_att = 200
     max_speed_att = 50
     step_speed_att = 0.9
 
     initial_snake_size_att = 1
-    fruit_prob_att = 1
-    fruit_life_prob_max_att = 1
-    fruit_life_prob_min_att = 1
+
     fruit_not_on_board = True
     fruit_pos = [1, 1]
     game_board_zoom_att = 50
     game_board_size_att = [16, 9]
 
-
-    border_att = True
-
     snake_hungry = True
-    snake_pos = [game_board_size_att[0]/2, game_board_size_att[1]/2]
+    snake_pos = [round(game_board_size_att[0]/2), round(game_board_size_att[1]/2)]
     snake_direction = 4
     snake_whole = [(snake_pos[0], snake_pos[1])]
     snake_length = len(snake_whole)
@@ -67,13 +61,6 @@ class Snake(qw.QMainWindow):
         if e.key() == qc.Qt.Key_Escape:
             self.setCentralWidget(Settings(self))
 
-        if e.key() == qc.Qt.Key_Space:
-            if self.game_stopped:
-                self.game_stopped = False
-            else:
-                self.game_stopped = True
-
-
 
 class Settings(qw.QWidget):
 
@@ -86,9 +73,6 @@ class Settings(qw.QWidget):
         self.player_name = qw.QLineEdit(self.settings_main.player_name_att)
         self.player_name.setMaxLength(16)
 
-        self.speed_up_factor = qw.QLineEdit(str(self.settings_main.speed_up_factor_att))
-        self.speed_up_factor.setMaxLength(3)
-
         self.int_speed = qw.QLineEdit(str(self.settings_main.int_speed_att))
         self.int_speed.setMaxLength(4)
 
@@ -100,11 +84,6 @@ class Settings(qw.QWidget):
 
         self.initial_snake_size = qw.QLineEdit(str(self.settings_main.initial_snake_size_att))
         self.initial_snake_size.setMaxLength(1)
-
-        self.fruit_prob = qw.QLineEdit(str(self.settings_main.fruit_prob_att))
-        self.fruit_prob.setMaxLength(1)
-        self.fruit_life_prob_max = qw.QLineEdit(str(self.settings_main.fruit_life_prob_max_att))
-        self.fruit_life_prob_min = qw.QLineEdit(str(self.settings_main.fruit_life_prob_min_att))
 
         self.game_board_zoom = qw.QLineEdit(str(self.settings_main.game_board_zoom_att))
 
@@ -121,22 +100,13 @@ class Settings(qw.QWidget):
         high_score_list = qw.QPushButton()
         high_score_list.setText('Highscore-Liste')
 
-        border = qw.QHBoxLayout()
-        border.addWidget(qw.QCheckBox("on"))
-        border.addWidget(qw.QCheckBox("off"))
-
         form = qw.QFormLayout()
 
         form.addRow(qw.QLabel("player_name"), self.player_name)
-        form.addRow(qw.QLabel("border"), border)
-        form.addRow(qw.QLabel("speedupfactor"), self.speed_up_factor)
         form.addRow(qw.QLabel("int_speed"), self.int_speed)
         form.addRow(qw.QLabel("max_speed"), self.max_speed)
         form.addRow(qw.QLabel("step_speed"), self.step_speed)
         form.addRow(qw.QLabel("initial_snake_size"), self.initial_snake_size)
-        form.addRow(qw.QLabel("fruit_prob"), self.fruit_prob)
-        form.addRow(qw.QLabel("fruit_life_prob_max"), self.fruit_life_prob_max)
-        form.addRow(qw.QLabel("fruit_life_prob_min"), self.fruit_life_prob_min)
         form.addRow(qw.QLabel("Game Board Size"), self.game_board_size)
         form.addRow(qw.QLabel("Game Board Zoom"), self.game_board_zoom)
         form.addRow(game_start_button, high_score_list)
@@ -151,14 +121,10 @@ class Settings(qw.QWidget):
     def game_start_clicked(self):
 
         main_window.player_name_att = self.player_name.text()
-        main_window.speed_up_factor_att = int(self.speed_up_factor.text())
         main_window.int_speed_att = int(self.int_speed.text())
         main_window.max_speed_att = int(self.max_speed.text())
         main_window.step_speed_att = float(self.step_speed.text())
         main_window.initial_snake_size_att = int(self.initial_snake_size.text())
-        main_window.fruit_prob_att = int(self.fruit_prob.text())
-        main_window.fruit_life_prob_max_att = int(self.fruit_life_prob_max.text())
-        main_window.fruit_life_prob_min_att = int(self.fruit_life_prob_min.text())
         main_window.game_board_zoom_att = int(self.game_board_zoom.text())
         main_window.game_board_size_att[0] = int(self.game_board_size_1.text())
         main_window.game_board_size_att[1] = int(self.game_board_size_2.text())
@@ -252,18 +218,17 @@ class SnakeGameWindow(qw.QLabel):
 
     @staticmethod
     def snake_collide_border(self):
-        if main_window.border_att:
-            if main_window.snake_pos[0] < 0:
-                main_window.snake_pos[0] = main_window.game_board_size_att[0]
+        if main_window.snake_pos[0] < 0:
+            main_window.snake_pos[0] = main_window.game_board_size_att[0]-1
 
-            elif main_window.snake_pos[0] >= main_window.game_board_size_att[0]:
-                main_window.snake_pos[0] = -1
+        elif main_window.snake_pos[0] > main_window.game_board_size_att[0]-1:
+            main_window.snake_pos[0] = 0
 
-            elif main_window.snake_pos[1] < 0:
-                main_window.snake_pos[1] = main_window.game_board_size_att[1]
+        elif main_window.snake_pos[1] < 0:
+            main_window.snake_pos[1] = main_window.game_board_size_att[1]-1
 
-            elif main_window.snake_pos[1] >= main_window.game_board_size_att[1]:
-                main_window.snake_pos[1] = -1
+        elif main_window.snake_pos[1] > main_window.game_board_size_att[1]-1:
+            main_window.snake_pos[1] = 0
 
     def snake_collide_fruit(self):
         if main_window.snake_pos[0] == main_window.fruit_pos[0] and main_window.snake_pos[1] == main_window.fruit_pos[1]:
@@ -287,6 +252,9 @@ class SnakeGameWindow(qw.QLabel):
 
     def game_lost(self):
         self.timer.stop()
+        main_window.snake_pos = [round(main_window.game_board_size_att[0]/2), round(main_window.game_board_size_att[1]/2)]
+        main_window.snake_whole = [(main_window.snake_pos[0], main_window.snake_pos[1])]
+        main_window.int_speed_att = 200
 
     def draw_fruit(self):
         self.draw_rectangle(main_window.fruit_pos[0], main_window.fruit_pos[1], qc.Qt.red)
