@@ -32,8 +32,8 @@ class Snake(qw.QMainWindow):
         self.init_me()
 
     def init_me(self):
-        self.setWindowIcon(qg.QIcon('snake.png'))
-        self.setWindowTitle('Snake')
+        self.setWindowIcon(qg.QIcon('Blatt1\snake.png'))
+        self.setWindowTitle('Blatt1')
         self.setCentralWidget(Settings(self))
         self.show()
         self.setMouseTracking(True)
@@ -255,7 +255,7 @@ class SnakeGameWindow(qw.QLabel):
             main_window.initial_snake_size_att = main_window.initial_snake_size_att +1
 
     def snake_harakiri(self):
-        print(' Snake length', len(main_window.snake_whole))
+        print(' Blatt1 length', len(main_window.snake_whole))
         for i in range(0, len(main_window.snake_whole)-1):
             print('for elenment', i)
             print('snake Head', main_window.snake_pos)

@@ -19,8 +19,9 @@ def aufgabe1(scope1, scope2):
     fig.show()
 
 def aufgabe2():
+    pass
 
 
 if __name__ == '__main__':
     wetterdaten = np.loadtxt("muenchen_flughafen.txt", skiprows=3)
-    #aufgabe1(0, 500)
+    aufgabe1(0, 500)
